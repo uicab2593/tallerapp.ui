@@ -58,8 +58,8 @@ const colors = computed(() => COLOR_CLASSES[meta.value.color] ?? COLOR_CLASSES.b
     <div class="flex items-start justify-between gap-2">
       <div>
         <p class="font-semibold text-gray-900 text-sm leading-tight">
-          {{ catalog?.brand }} {{ catalog?.model }}
-          <span class="text-gray-500 font-normal">{{ catalog?.year }}</span>
+          {{ catalog?.brand }} {{ catalog?.model }}<br>
+          <span v-if="catalog?.motor_cc" class="text-gray-700 font-normal text-xs">{{ catalog?.year }} {{ catalog.motor_cc }}cc</span>
         </p>
         <p class="text-xs text-gray-500 mt-0.5">
           {{ vehicle?.plate }} · {{ vehicle?.color }}
@@ -107,7 +107,7 @@ const colors = computed(() => COLOR_CLASSES[meta.value.color] ?? COLOR_CLASSES.b
     <!-- Acción -->
     <button
       @click="emit('view', order)"
-      class="w-full text-sm text-indigo-600 hover:text-indigo-800 font-medium py-2 border border-indigo-300 hover:border-indigo-500 rounded-lg transition-colors"
+      class="w-full text-sm text-brand-600 hover:text-brand-800 font-medium py-2 border border-brand-300 hover:border-brand-500 rounded-lg transition-colors"
     >
       Ver detalles
     </button>

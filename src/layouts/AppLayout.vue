@@ -37,7 +37,14 @@ const allNavItems = [
       <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>`,
   },
-  // Los módulos se agregan aquí como nuevos objetos { label, to, roles, icon }
+  {
+    label: 'Comisiones',
+    to: { name: 'commissions' },
+    roles: ['master', 'admin'],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>`,
+  },
 ]
 
 const navItems = computed(() =>
@@ -66,28 +73,20 @@ async function handleLogout() {
     <!-- Overlay móvil -->
     <div
       v-if="sidebarOpen"
-      class="fixed inset-0 z-20 bg-black/40 lg:hidden"
+      class="fixed inset-0 z-20 bg-black/50 lg:hidden"
       @click="sidebarOpen = false"
     />
 
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed inset-y-0 left-0 z-30 flex flex-col w-64 bg-gray-900 text-white transition-transform duration-300 lg:static lg:translate-x-0',
+        'fixed inset-y-0 left-0 z-30 flex flex-col w-64 bg-black text-white transition-transform duration-300 lg:static lg:translate-x-0',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
     >
-      <!-- Logo / Nombre de la app -->
-      <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-700">
-        <div class="bg-indigo-600 rounded-lg p-2 shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <div>
-          <p class="font-bold text-sm leading-tight">Taller Motos</p>
-          <p class="text-gray-400 text-xs">Panel de gestión</p>
-        </div>
+      <!-- Logo -->
+      <div class="flex items-center justify-center px-5 py-4 border-b border-white/10">
+        <img src="/logo.png" alt="Refaccionaria Stradas" class="h-12 w-auto object-contain" />
       </div>
 
       <!-- Navegación -->
@@ -97,14 +96,19 @@ async function handleLogout() {
           :key="item.label"
           :to="item.to"
           @click="sidebarOpen = false"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-          exact-active-class="bg-indigo-600 text-white hover:bg-indigo-700"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+          exact-active-class="!bg-brand !text-white hover:!bg-brand-dark"
         >
           <span class="shrink-0" v-html="item.icon" />
           {{ item.label }}
         </RouterLink>
       </nav>
 
+      <!-- Footer del sidebar: info de usuario -->
+      <div class="px-4 py-3 border-t border-white/10">
+        <p class="text-xs font-semibold text-white truncate">{{ auth.user?.name }}</p>
+        <p class="text-xs text-gray-500 capitalize">{{ auth.user?.rol }}</p>
+      </div>
     </aside>
 
     <!-- Contenido principal -->
@@ -130,7 +134,7 @@ async function handleLogout() {
             :disabled="!canSwitchBranch || switchingBranch"
             class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-default"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -157,9 +161,9 @@ async function handleLogout() {
               :key="branch.id"
               @click="handleSwitchBranch(branch.id)"
               class="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors"
-              :class="branch.id === branchStore.activeBranch?.id ? 'text-indigo-600 font-medium' : 'text-gray-700'"
+              :class="branch.id === branchStore.activeBranch?.id ? 'text-brand font-medium' : 'text-gray-700'"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" :class="branch.id === branchStore.activeBranch?.id ? 'text-indigo-500' : 'text-transparent'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" :class="branch.id === branchStore.activeBranch?.id ? 'text-brand' : 'text-transparent'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
               {{ branch.name }}
@@ -177,7 +181,7 @@ async function handleLogout() {
           </div>
           <button
             @click="handleLogout"
-            class="flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
+            class="flex items-center gap-1.5 text-sm text-brand hover:text-brand-dark font-medium transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

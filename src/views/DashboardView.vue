@@ -4,6 +4,9 @@ import { useServiceOrdersStore, STATUS_META } from '@/stores/serviceOrders'
 import ServiceOrderCard from '@/components/dashboard/ServiceOrderCard.vue'
 import ServiceOrderModal from '@/components/dashboard/ServiceOrderModal.vue'
 import CreateServiceModal from '@/components/dashboard/CreateServiceModal.vue'
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { es } from 'date-fns/locale'
 
 const store = useServiceOrdersStore()
 const selectedOrder   = ref(null)
@@ -110,6 +113,45 @@ function serviceTypeLabel(type) {
   return type === 'installation' ? 'Instalación' : 'Reparación'
 }
 
+// ── Date range pickers ───────────────────────────────────────────────────────
+const fmt = (d) => d.toISOString().split('T')[0]
+
+const kanbanDateRange = computed({
+  get() {
+    const { date_from, date_to } = store.filters
+    if (!date_from && !date_to) return null
+    return [
+      date_from ? new Date(date_from + 'T00:00:00') : null,
+      date_to   ? new Date(date_to   + 'T00:00:00') : null,
+    ]
+  },
+  set(range) {
+    if (!range || range.length < 2) {
+      store.setFilters({ date_from: '', date_to: '' })
+    } else {
+      store.setFilters({ date_from: fmt(range[0]), date_to: fmt(range[1]) })
+    }
+  },
+})
+
+const deliveredDateRange = computed({
+  get() {
+    const { date_from, date_to } = store.deliveredFilters
+    if (!date_from && !date_to) return null
+    return [
+      date_from ? new Date(date_from + 'T00:00:00') : null,
+      date_to   ? new Date(date_to   + 'T00:00:00') : null,
+    ]
+  },
+  set(range) {
+    if (!range || range.length < 2) {
+      store.setDeliveredFilters({ date_from: '', date_to: '' })
+    } else {
+      store.setDeliveredFilters({ date_from: fmt(range[0]), date_to: fmt(range[1]) })
+    }
+  },
+})
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 onMounted(async () => {
   await Promise.all([store.fetchOrders(), store.fetchMechanics()])
@@ -141,7 +183,7 @@ onMounted(async () => {
         </button>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors"
+          class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -156,12 +198,12 @@ onMounted(async () => {
       <button
         @click="switchTab('active')"
         :class="activeTab === 'active'
-          ? 'border-b-2 border-indigo-600 text-indigo-600 font-semibold'
+          ? 'border-b-2 border-brand-600 text-brand-600 font-semibold'
           : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'"
         class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors"
       >
         Activos
-        <span :class="activeTab === 'active' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'"
+        <span :class="activeTab === 'active' ? 'bg-brand-100 text-brand-600' : 'bg-gray-100 text-gray-500'"
               class="px-2 py-0.5 text-xs rounded-full font-medium">
           {{ store.orders.length }}
         </span>
@@ -169,13 +211,13 @@ onMounted(async () => {
       <button
         @click="switchTab('delivered')"
         :class="activeTab === 'delivered'
-          ? 'border-b-2 border-indigo-600 text-indigo-600 font-semibold'
+          ? 'border-b-2 border-brand-600 text-brand-600 font-semibold'
           : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'"
         class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors"
       >
         Entregados
         <span v-if="store.deliveredMeta.total > 0"
-              :class="activeTab === 'delivered' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'"
+              :class="activeTab === 'delivered' ? 'bg-brand-100 text-brand-600' : 'bg-gray-100 text-gray-500'"
               class="px-2 py-0.5 text-xs rounded-full font-medium">
           {{ store.deliveredMeta.total }}
         </span>
@@ -188,22 +230,19 @@ onMounted(async () => {
       <!-- Filtros -->
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
         <div class="flex flex-wrap items-end gap-4">
-          <div class="flex flex-col gap-1 min-w-36">
-            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Desde</label>
-            <input
-              type="date"
-              :value="store.filters.date_from"
-              @change="store.setFilters({ date_from: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-          <div class="flex flex-col gap-1 min-w-36">
-            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Hasta</label>
-            <input
-              type="date"
-              :value="store.filters.date_to"
-              @change="store.setFilters({ date_to: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          <div class="flex flex-col gap-1 min-w-64">
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Rango de fechas</label>
+            <VueDatePicker
+              v-model="kanbanDateRange"
+              range
+              :time-config="{ enableTimePicker: false }"
+              :formats="{ input: 'd MMMM yyyy' }"
+              :locale="es"
+              select-text="Seleccionar"
+              cancel-text="Cancelar"
+              :auto-apply="true"
+              placeholder="Seleccionar rango..."
+              input-class-name="dp-custom-input"
             />
           </div>
           <div class="flex flex-col gap-1 min-w-44">
@@ -211,7 +250,7 @@ onMounted(async () => {
             <select
               :value="store.filters.status"
               @change="store.setFilters({ status: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">Todos los estados</option>
               <option v-for="[key, meta] in kanbanStatusOptions" :key="key" :value="key">
@@ -220,7 +259,7 @@ onMounted(async () => {
             </select>
           </div>
           <div class="flex gap-2">
-            <button @click="applyFilters" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors">
+            <button @click="applyFilters" class="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors">
               Filtrar
             </button>
             <button @click="resetFilters" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">
@@ -242,11 +281,11 @@ onMounted(async () => {
           class="absolute inset-0 z-10 flex items-center justify-center bg-white/60 rounded-xl backdrop-blur-sm"
         >
           <div class="flex flex-col items-center gap-3">
-            <svg class="h-8 w-8 animate-spin text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="h-8 w-8 animate-spin text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
             </svg>
-            <p class="text-sm font-medium text-indigo-700">Buscando…</p>
+            <p class="text-sm font-medium text-brand-700">Buscando…</p>
           </div>
         </div>
 
@@ -297,22 +336,19 @@ onMounted(async () => {
       <!-- Filtros -->
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
         <div class="flex flex-wrap items-end gap-4">
-          <div class="flex flex-col gap-1 min-w-36">
-            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Entregado desde</label>
-            <input
-              type="date"
-              :value="store.deliveredFilters.date_from"
-              @change="store.setDeliveredFilters({ date_from: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-          <div class="flex flex-col gap-1 min-w-36">
-            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Entregado hasta</label>
-            <input
-              type="date"
-              :value="store.deliveredFilters.date_to"
-              @change="store.setDeliveredFilters({ date_to: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          <div class="flex flex-col gap-1 min-w-64">
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Fecha de entrega</label>
+            <VueDatePicker
+              v-model="deliveredDateRange"
+              range
+              :time-config="{ enableTimePicker: false }"
+              :formats="{ input: 'd MMMM yyyy' }"
+              :locale="es"
+              select-text="Seleccionar"
+              cancel-text="Cancelar"
+              :auto-apply="true"
+              placeholder="Seleccionar rango..."
+              input-class-name="dp-custom-input"
             />
           </div>
           <div class="flex flex-col gap-1 min-w-44">
@@ -322,7 +358,7 @@ onMounted(async () => {
               placeholder="Nombre del cliente"
               :value="store.deliveredFilters.customer_name"
               @input="store.setDeliveredFilters({ customer_name: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div class="flex flex-col gap-1 min-w-36">
@@ -332,7 +368,7 @@ onMounted(async () => {
               placeholder="Número"
               :value="store.deliveredFilters.customer_phone"
               @input="store.setDeliveredFilters({ customer_phone: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div class="flex flex-col gap-1 min-w-32">
@@ -342,11 +378,11 @@ onMounted(async () => {
               placeholder="ABC-1234"
               :value="store.deliveredFilters.plate"
               @input="store.setDeliveredFilters({ plate: $event.target.value })"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div class="flex gap-2">
-            <button @click="applyDeliveredFilters" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors">
+            <button @click="applyDeliveredFilters" class="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors">
               Filtrar
             </button>
             <button @click="resetDeliveredFilters" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">
@@ -369,7 +405,7 @@ onMounted(async () => {
           v-if="store.deliveredLoading"
           class="absolute inset-0 z-10 flex items-center justify-center bg-white/70 rounded-xl"
         >
-          <svg class="h-8 w-8 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg class="h-8 w-8 animate-spin text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
@@ -421,6 +457,7 @@ onMounted(async () => {
                   {{ order.vehicle?.vehicle_catalog?.brand }}
                   {{ order.vehicle?.vehicle_catalog?.model }}
                   {{ order.vehicle?.vehicle_catalog?.year }}
+                  <span v-if="order.vehicle?.vehicle_catalog?.motor_cc" class="text-gray-400 text-xs ml-0.5">{{ order.vehicle.vehicle_catalog.motor_cc }}cc</span>
                   <span class="text-gray-400 text-xs ml-1">· {{ order.vehicle?.color }}</span>
                 </td>
                 <td class="px-4 py-3">
@@ -448,7 +485,7 @@ onMounted(async () => {
                 <td class="px-4 py-3 text-right">
                   <button
                     @click="openModal(order)"
-                    class="text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors"
+                    class="text-xs font-medium text-brand-600 hover:text-brand-800 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     Ver
                   </button>
@@ -497,7 +534,7 @@ onMounted(async () => {
               <button
                 @click="goToPage(page)"
                 :class="page === store.deliveredMeta.current_page
-                  ? 'bg-indigo-600 text-white font-semibold'
+                  ? 'bg-brand-600 text-white font-semibold'
                   : 'text-gray-600 hover:bg-gray-100'"
                 class="w-8 h-8 flex items-center justify-center text-xs rounded-lg transition-colors"
               >
@@ -538,3 +575,29 @@ onMounted(async () => {
     @close="showCreateModal = false"
   />
 </template>
+
+<style>
+.dp-custom-input {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  width: 100%;
+}
+.dp-custom-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #818cf8;
+  border-color: #818cf8;
+}
+.dp__theme_light {
+  --dp-border-radius: 0.75rem;
+  --dp-font-size: 0.875rem;
+  --dp-primary-color: #4f46e5;
+  --dp-primary-text-color: #ffffff;
+  --dp-secondary-color: #e0e7ff;
+  --dp-hover-color: #eef2ff;
+  --dp-range-between-dates-background-color: #eef2ff;
+  --dp-range-between-dates-text-color: #4338ca;
+}
+</style>

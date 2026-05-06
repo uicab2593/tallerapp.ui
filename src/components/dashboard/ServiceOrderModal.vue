@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useServiceOrdersStore, STATUS_META, STATUS_TRANSITIONS } from '@/stores/serviceOrders'
 import { serviceOrdersApi } from '@/api/serviceOrders'
 import ServiceOrderNotes from '@/components/dashboard/ServiceOrderNotes.vue'
+import AppToast from '@/components/ui/AppToast.vue'
 
 const props = defineProps({
   order: { type: Object, required: true },
@@ -11,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 
 const store = useServiceOrdersStore()
+const toast = ref(null)
 
 // ── Local status (tracks changes independently from the form) ────────────────
 const localStatus = ref(props.order.status)
@@ -44,6 +46,14 @@ const statusChangeError   = ref(null)
 
 const nextStatuses = computed(() => STATUS_TRANSITIONS[localStatus.value] ?? [])
 
+const deliveredValidationErrors = computed(() => {
+  if (pendingStatus.value !== 'delivered') return []
+  const errors = []
+  if (!form.value.external_service_id?.trim()) errors.push('Folio Ticket')
+  if (!(parseFloat(form.value.labor_cost) > 0)) errors.push('Costo del servicio')
+  return errors
+})
+
 function openStatusModal() {
   pendingStatus.value     = null
   statusPhase.value       = 'pick'
@@ -64,6 +74,10 @@ function selectNextStatus(s) {
 }
 
 async function executeStatusChange() {
+  if (deliveredValidationErrors.value.length) {
+    statusChangeError.value = `Para marcar como Entregado completa los campos: ${deliveredValidationErrors.value.join(' y ')}.`
+    return
+  }
   statusChanging.value    = true
   statusChangeError.value = null
   try {
@@ -130,13 +144,13 @@ const formattedDate = computed(() =>
 
 // ── Color helpers ────────────────────────────────────────────────────────────
 const COLOR_CLASSES = {
-  blue:    { badge: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500' },
-  amber:   { badge: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500' },
-  emerald: { badge: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  red:     { badge: 'bg-red-100 text-red-700',         dot: 'bg-red-500' },
-  violet:  { badge: 'bg-violet-100 text-violet-700',   dot: 'bg-violet-500' },
-  teal:    { badge: 'bg-teal-100 text-teal-700',       dot: 'bg-teal-500' },
-  gray:    { badge: 'bg-gray-100 text-gray-600',       dot: 'bg-gray-400' },
+  blue:    { badge: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500',   btn: 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 hover:border-blue-300' },
+  amber:   { badge: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500',  btn: 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200 hover:border-amber-300' },
+  emerald: { badge: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500',btn: 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200 hover:border-emerald-300' },
+  red:     { badge: 'bg-red-100 text-red-700',         dot: 'bg-red-500',    btn: 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200 hover:border-red-300' },
+  violet:  { badge: 'bg-violet-100 text-violet-700',   dot: 'bg-violet-500', btn: 'bg-violet-100 text-violet-800 border-violet-200 hover:bg-violet-200 hover:border-violet-300' },
+  teal:    { badge: 'bg-teal-100 text-teal-700',       dot: 'bg-teal-500',   btn: 'bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-200 hover:border-teal-300' },
+  gray:    { badge: 'bg-gray-100 text-gray-600',       dot: 'bg-gray-400',   btn: 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 hover:border-gray-300' },
 }
 
 function statusColors(key) {
@@ -170,7 +184,7 @@ async function save() {
       mechanics:           form.value.mechanics,
     })
     emit('saved')
-    emit('close')
+    toast.value.show('Registro actualizado con éxito')
   } catch (e) {
     saveError.value = e.message
   } finally {
@@ -194,7 +208,7 @@ async function save() {
           <div class="flex-1 min-w-0">
             <h2 class="text-lg font-bold text-gray-900">Orden #{{ order.id }}</h2>
             <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-              <p class="text-sm text-gray-500">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}</p>
+              <p class="text-sm text-gray-500">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}<span v-if="catalog?.motor_cc" class="ml-1">{{ catalog.motor_cc }}cc</span></p>
               <span class="text-gray-300 text-xs select-none">·</span>
               <!-- Status badge -->
               <span
@@ -210,7 +224,7 @@ async function save() {
               <button
                 v-if="nextStatuses.length"
                 @click="openStatusModal"
-                class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded-lg hover:bg-indigo-50 border border-indigo-200 hover:border-indigo-400 transition-colors"
+                class="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-800 px-2 py-1 rounded-lg hover:bg-brand-50 border border-brand-200 hover:border-brand-400 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -251,7 +265,7 @@ async function save() {
             <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
               <div>
                 <span class="text-gray-500 text-xs">Vehículo</span>
-                <p class="font-medium text-gray-800">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}</p>
+                <p class="font-medium text-gray-800">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}<span v-if="catalog?.motor_cc" class="text-gray-500 font-normal ml-1">{{ catalog.motor_cc }}cc</span></p>
               </div>
               <div>
                 <span class="text-gray-500 text-xs">Cliente</span>
@@ -277,7 +291,7 @@ async function save() {
                 <span class="text-gray-500 text-xs">Fecha de registro</span>
                 <p class="font-medium text-gray-800">
                   {{ formattedDate }}
-                  <span class="text-indigo-600 font-semibold">({{ elapsed }})</span>
+                  <span class="text-brand-600 font-semibold">({{ elapsed }})</span>
                 </p>
               </div>
             </div>
@@ -293,7 +307,7 @@ async function save() {
                 :class="[
                   'flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors select-none',
                   isMechanicSelected(mechanic.id)
-                    ? 'border-indigo-400 bg-indigo-50'
+                    ? 'border-brand-400 bg-brand-50'
                     : 'border-gray-300 hover:border-gray-400',
                 ]"
               >
@@ -301,7 +315,7 @@ async function save() {
                   type="checkbox"
                   :checked="isMechanicSelected(mechanic.id)"
                   @change="toggleMechanic(mechanic.id)"
-                  class="w-4 h-4 rounded text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                  class="w-4 h-4 rounded text-brand-600 border-gray-300 focus:ring-brand-500"
                 />
                 <span class="text-sm font-medium text-gray-800">{{ mechanic.name }}</span>
               </label>
@@ -314,7 +328,7 @@ async function save() {
             <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Tipo de servicio</label>
             <select
               v-model="form.service_type"
-              class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="repair">Reparación</option>
               <option value="installation">Instalación</option>
@@ -327,7 +341,7 @@ async function save() {
             <textarea
               v-model="form.customer_report"
               rows="3"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
             />
           </section>
 
@@ -338,7 +352,7 @@ async function save() {
               v-model="form.diagnosis"
               rows="3"
               placeholder="Sin diagnóstico aún..."
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
             />
           </section>
 
@@ -349,18 +363,18 @@ async function save() {
               v-model="form.service_description"
               rows="3"
               placeholder="Sin descripción aún..."
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
             />
           </section>
 
           <!-- ID externo -->
           <section>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">ID externo</label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Folio Ticket</label>
             <input
               v-model="form.external_service_id"
               type="text"
               placeholder="Opcional"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </section>
 
@@ -375,7 +389,7 @@ async function save() {
                 min="0"
                 step="0.01"
                 placeholder="0.00"
-                class="w-full rounded-xl border border-gray-300 pl-7 pr-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 pl-7 pr-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </section>
@@ -400,12 +414,12 @@ async function save() {
             @click="emit('close')"
             class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors"
           >
-            Cancelar
+            Cerrar
           </button>
           <button
             @click="save"
             :disabled="saving"
-            class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl transition-colors"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-60 rounded-xl transition-colors"
           >
             {{ saving ? 'Guardando…' : 'Guardar cambios' }}
           </button>
@@ -449,24 +463,20 @@ async function save() {
               v-for="s in nextStatuses"
               :key="s"
               @click="selectNextStatus(s)"
-              class="flex items-center gap-3 w-full px-4 py-3 rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors text-left group"
+              :class="[
+                'flex items-center gap-3 w-full px-4 py-3 rounded-xl border transition-colors text-left',
+                statusColors(s).btn,
+              ]"
             >
-              <span
-                :class="[
-                  'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full',
-                  statusColors(s).badge,
-                ]"
-              >
-                <span :class="['w-1.5 h-1.5 rounded-full', statusColors(s).dot]" />
-                {{ STATUS_META[s]?.label ?? s }}
-              </span>
+              <span :class="['w-2 h-2 rounded-full shrink-0', statusColors(s).dot]" />
+              <span class="text-sm font-semibold">{{ STATUS_META[s]?.label ?? s }}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-300 group-hover:text-indigo-400 ml-auto transition-colors"
+                class="h-4 w-4 ml-auto opacity-40"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                stroke-width="2"
+                stroke-width="2.5"
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -543,6 +553,22 @@ async function save() {
             </p>
           </div>
 
+          <!-- Delivered validation -->
+          <div
+            v-if="deliveredValidationErrors.length"
+            class="mx-6 mb-4 flex gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            <p class="text-sm text-red-800">
+              Para marcar como <strong>"Entregado"</strong> debes completar:
+              <span v-for="(e, i) in deliveredValidationErrors" :key="e">
+                <strong>{{ e }}</strong><span v-if="i < deliveredValidationErrors.length - 1"> y </span>
+              </span>.
+            </p>
+          </div>
+
           <!-- Error -->
           <p v-if="statusChangeError" class="mx-6 mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3">
             {{ statusChangeError }}
@@ -559,8 +585,8 @@ async function save() {
             </button>
             <button
               @click="executeStatusChange"
-              :disabled="statusChanging"
-              class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl transition-colors"
+              :disabled="statusChanging || deliveredValidationErrors.length > 0"
+              class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-60 rounded-xl transition-colors"
             >
               <svg
                 v-if="statusChanging"
@@ -609,7 +635,7 @@ async function save() {
 
           <!-- Loading -->
           <div v-if="logsLoading" class="flex items-center justify-center py-10">
-            <svg class="h-6 w-6 animate-spin text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="h-6 w-6 animate-spin text-brand-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
             </svg>
@@ -668,4 +694,6 @@ async function save() {
     </div>
 
   </Teleport>
+
+  <AppToast ref="toast" />
 </template>

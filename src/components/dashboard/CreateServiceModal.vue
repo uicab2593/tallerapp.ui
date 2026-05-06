@@ -167,7 +167,7 @@ const STATUS_OPTIONS = [
           <!-- ── SECCIÓN 1: CLIENTE ─────────────────────────────────────────── -->
           <section>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-4 flex items-center gap-2">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-bold">1</span>
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white text-xs font-bold">1</span>
               Cliente
             </h3>
 
@@ -179,12 +179,12 @@ const STATUS_OPTIONS = [
                 placeholder="Número de teléfono (10 dígitos)"
                 maxlength="10"
                 @keyup.enter="searchCustomer"
-                class="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
               <button
                 @click="searchCustomer"
                 :disabled="customerState === 'searching' || !phoneInput.trim()"
-                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl transition-colors shrink-0"
+                class="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-60 rounded-xl transition-colors shrink-0"
               >
                 {{ customerState === 'searching' ? 'Buscando…' : 'Buscar' }}
               </button>
@@ -225,7 +225,7 @@ const STATUS_OPTIONS = [
           <!-- ── SECCIÓN 2: VEHÍCULO ────────────────────────────────────────── -->
           <section v-if="customerState === 'found'">
             <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-4 flex items-center gap-2">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-bold">2</span>
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white text-xs font-bold">2</span>
               Vehículo
             </h3>
 
@@ -239,7 +239,7 @@ const STATUS_OPTIONS = [
                 :class="[
                   'w-full text-left flex items-center justify-between px-4 py-3 rounded-xl border transition-colors',
                   selectedVehicle?.id === v.id
-                    ? 'border-indigo-400 bg-indigo-50'
+                    ? 'border-brand-400 bg-brand-50'
                     : 'border-gray-300 hover:border-gray-400 bg-white',
                 ]"
               >
@@ -252,7 +252,7 @@ const STATUS_OPTIONS = [
                 </div>
                 <div
                   v-if="selectedVehicle?.id === v.id"
-                  class="h-5 w-5 rounded-full bg-indigo-600 flex items-center justify-center shrink-0"
+                  class="h-5 w-5 rounded-full bg-brand-600 flex items-center justify-center shrink-0"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
@@ -264,18 +264,18 @@ const STATUS_OPTIONS = [
             <!-- Vehículo nuevo configurado -->
             <div
               v-if="vehicleMode === 'new' && newVehicleData"
-              class="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3"
+              class="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-4 py-3"
             >
               <div>
-                <p class="text-sm font-semibold text-indigo-800">
+                <p class="text-sm font-semibold text-brand-800">
                   {{ newVehicleData.vehicleCatalog.brand }} {{ newVehicleData.vehicleCatalog.model }}
-                  <span class="font-normal text-indigo-500">{{ newVehicleData.vehicleCatalog.year }}</span>
+                  <span class="font-normal text-brand-500">{{ newVehicleData.vehicleCatalog.year }}</span>
                 </p>
-                <p class="text-xs text-indigo-500">{{ newVehicleData.plate }} · {{ newVehicleData.color }}</p>
+                <p class="text-xs text-brand-500">{{ newVehicleData.plate }} · {{ newVehicleData.color }}</p>
               </div>
               <button
                 @click="openAddVehicle(newVehicleData)"
-                class="text-xs font-medium text-indigo-700 hover:text-indigo-900 underline shrink-0"
+                class="text-xs font-medium text-brand-700 hover:text-brand-900 underline shrink-0"
               >
                 Editar
               </button>
@@ -285,7 +285,7 @@ const STATUS_OPTIONS = [
             <button
               type="button"
               @click="openAddVehicle()"
-              class="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-indigo-600 border border-dashed border-indigo-300 rounded-xl hover:bg-indigo-50 transition-colors"
+              class="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-brand-600 border border-dashed border-brand-300 rounded-xl hover:bg-brand-50 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -297,7 +297,7 @@ const STATUS_OPTIONS = [
           <!-- ── SECCIÓN 3: DATOS DEL SERVICIO ─────────────────────────────── -->
           <section v-if="vehicleMode !== 'idle'">
             <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-4 flex items-center gap-2">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-bold">3</span>
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white text-xs font-bold">3</span>
               Datos del servicio
             </h3>
 
@@ -311,14 +311,14 @@ const STATUS_OPTIONS = [
                     type="number"
                     min="0"
                     placeholder="5000"
-                    class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
                   />
                 </div>
                 <div>
                   <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Tipo de servicio</label>
                   <select
                     v-model="form.service_type"
-                    class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
                   >
                     <option value="repair">Reparación</option>
                     <option value="installation">Instalación</option>
@@ -331,7 +331,7 @@ const STATUS_OPTIONS = [
                 <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Estado inicial</label>
                 <select
                   v-model="form.status"
-                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
                 >
                   <option v-for="s in STATUS_OPTIONS" :key="s.value" :value="s.value">{{ s.label }}</option>
                 </select>
@@ -344,7 +344,7 @@ const STATUS_OPTIONS = [
                   v-model="form.customer_report"
                   rows="3"
                   placeholder="Describe lo que reporta el cliente…"
-                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
                 />
               </div>
 
@@ -357,7 +357,7 @@ const STATUS_OPTIONS = [
                   v-model="form.external_service_id"
                   type="text"
                   placeholder="Opcional"
-                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-400"
                 />
               </div>
             </div>
@@ -381,7 +381,7 @@ const STATUS_OPTIONS = [
           <button
             @click="save"
             :disabled="!canSave || saving"
-            class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl transition-colors"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 rounded-xl transition-colors"
           >
             {{ saving ? 'Guardando…' : 'Crear servicio' }}
           </button>

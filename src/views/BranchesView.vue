@@ -119,7 +119,7 @@ onMounted(fetchBranches)
       </div>
       <button
         @click="openCreate"
-        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors"
+        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -168,7 +168,7 @@ onMounted(fetchBranches)
           class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
         >
           <!-- Ícono -->
-          <div class="h-9 w-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+          <div class="h-9 w-9 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -202,7 +202,7 @@ onMounted(fetchBranches)
           <div class="flex items-center gap-1 shrink-0">
             <button
               @click="openEdit(branch)"
-              class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+              class="p-1.5 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
               title="Editar"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -261,7 +261,7 @@ onMounted(fetchBranches)
           <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Nombre</label>
             <input v-model="form.name" type="text" required placeholder="Sucursal Centro"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
 
           <div class="flex flex-col gap-1.5">
@@ -269,7 +269,7 @@ onMounted(fetchBranches)
               Dirección <span class="normal-case font-normal text-gray-300">(opcional)</span>
             </label>
             <input v-model="form.address" type="text" placeholder="Av. Hidalgo 123, Col. Centro"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
 
           <div class="flex flex-col gap-1.5">
@@ -277,7 +277,7 @@ onMounted(fetchBranches)
               Teléfono <span class="normal-case font-normal text-gray-300">(opcional)</span>
             </label>
             <input v-model="form.phone" type="text" placeholder="6141234567"
-              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
 
           <div class="flex justify-end gap-3 pt-1">
@@ -286,7 +286,7 @@ onMounted(fetchBranches)
               Cancelar
             </button>
             <button type="submit" :disabled="saving"
-              class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors disabled:opacity-60">
+              class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors disabled:opacity-60">
               <svg v-if="saving" class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />

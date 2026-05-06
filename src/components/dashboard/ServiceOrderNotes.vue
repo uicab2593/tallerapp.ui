@@ -126,7 +126,7 @@ function relativeTime(dateStr) {
 
       <!-- Loading -->
       <div v-if="notesStore.loading" class="flex items-center justify-center py-10">
-        <svg class="h-5 w-5 animate-spin text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="h-5 w-5 animate-spin text-brand-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>
@@ -155,7 +155,7 @@ function relativeTime(dateStr) {
             <button
               v-if="canEdit(note) && editingId !== note.id"
               @click="startEdit(note)"
-              class="shrink-0 text-xs text-indigo-500 hover:text-indigo-700 font-medium leading-tight transition-colors"
+              class="shrink-0 text-xs text-brand-500 hover:text-brand-700 font-medium leading-tight transition-colors"
             >
               Editar
             </button>
@@ -164,7 +164,7 @@ function relativeTime(dateStr) {
           <!-- Date -->
           <p class="text-xs text-gray-400 mt-0.5 leading-tight">
             {{ formatDate(note.created_at) }}
-            <span v-if="relativeTime(note.created_at)" class="text-indigo-500">
+            <span v-if="relativeTime(note.created_at)" class="text-brand-500">
               ({{ relativeTime(note.created_at) }})
             </span>
           </p>
@@ -174,7 +174,7 @@ function relativeTime(dateStr) {
             <textarea
               v-model="editText"
               rows="4"
-              class="mt-2 w-full rounded-lg border border-indigo-300 px-2.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+              class="mt-2 w-full rounded-lg border border-brand-300 px-2.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
             />
             <p v-if="editError" class="mt-1 text-xs text-red-600">{{ editError }}</p>
             <div class="flex items-center justify-end gap-2 mt-2">
@@ -187,7 +187,7 @@ function relativeTime(dateStr) {
               <button
                 @click="saveEdit(note)"
                 :disabled="!editText.trim() || notesStore.saving"
-                class="text-xs text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 px-2.5 py-1 rounded-lg transition-colors"
+                class="text-xs text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 px-2.5 py-1 rounded-lg transition-colors"
               >
                 {{ notesStore.saving ? 'Guardando…' : 'Guardar' }}
               </button>
@@ -214,14 +214,14 @@ function relativeTime(dateStr) {
         @keydown="onNewNoteKeydown"
         rows="3"
         placeholder="Escribe una nota… (Ctrl+Enter para guardar)"
-        class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+        class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
       />
       <p v-if="addError" class="mt-1 text-xs text-red-600">{{ addError }}</p>
       <div class="flex justify-end mt-2">
         <button
           @click="submitNote"
           :disabled="!newNoteText.trim() || notesStore.saving"
-          class="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-lg transition-colors"
+          class="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 rounded-lg transition-colors"
         >
           <svg v-if="notesStore.saving" class="h-3.5 w-3.5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />

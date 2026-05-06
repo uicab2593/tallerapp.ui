@@ -61,7 +61,7 @@ onMounted(fetchStatus)
       <button
         @click="fetchStatus"
         :disabled="loading"
-        class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50
+        class="mt-4 w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50
                text-white font-medium py-2 px-4 rounded-lg transition-colors"
       >
         Actualizar

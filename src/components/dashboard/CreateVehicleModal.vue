@@ -143,7 +143,7 @@ function save() {
                 @input="onSearchInput"
                 @blur="onSearchBlur"
                 @focus="searchResults.length && (showDropdown = true)"
-                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
               <div v-if="isSearching" class="absolute right-3 top-2.5">
                 <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@ function save() {
                   :key="cat.id"
                   type="button"
                   @mousedown.prevent="selectCatalog(cat)"
-                  class="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                  class="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors"
                 >
                   {{ cat.brand }} {{ cat.model }} <span class="text-gray-400">{{ cat.year }}</span>
                 </button>
@@ -172,7 +172,7 @@ function save() {
                 <button
                   type="button"
                   @mousedown.prevent="openNewCatalog"
-                  class="w-full text-left px-4 py-2.5 text-sm text-indigo-600 font-medium border-t border-gray-200 hover:bg-indigo-50 transition-colors flex items-center gap-2"
+                  class="w-full text-left px-4 py-2.5 text-sm text-brand-600 font-medium border-t border-gray-200 hover:bg-brand-50 transition-colors flex items-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -185,18 +185,18 @@ function save() {
             <!-- Catálogo seleccionado -->
             <div
               v-if="selectedCatalog"
-              class="mt-2 flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5"
+              class="mt-2 flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5"
             >
               <div>
-                <p class="text-sm font-semibold text-indigo-800">
+                <p class="text-sm font-semibold text-brand-800">
                   {{ selectedCatalog.brand }} {{ selectedCatalog.model }}
                 </p>
-                <p class="text-xs text-indigo-500">{{ selectedCatalog.year }}</p>
+                <p class="text-xs text-brand-500">{{ selectedCatalog.year }}</p>
               </div>
               <button
                 type="button"
                 @click="openEditCatalog"
-                class="text-xs font-medium text-indigo-600 hover:text-indigo-800 underline"
+                class="text-xs font-medium text-brand-600 hover:text-brand-800 underline"
               >
                 Editar
               </button>
@@ -207,7 +207,7 @@ function save() {
               v-if="!showDropdown && !selectedCatalog"
               type="button"
               @click="openNewCatalog"
-              class="mt-2 text-xs text-indigo-600 font-medium hover:underline flex items-center gap-1"
+              class="mt-2 text-xs text-brand-600 font-medium hover:underline flex items-center gap-1"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -224,7 +224,7 @@ function save() {
                 v-model="form.color"
                 type="text"
                 placeholder="Rojo, Negro…"
-                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
             </div>
             <div>
@@ -233,7 +233,7 @@ function save() {
                 v-model="form.plate"
                 type="text"
                 placeholder="ABC-123"
-                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ function save() {
           </button>
           <button
             @click="save"
-            class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors"
           >
             Agregar vehículo
           </button>

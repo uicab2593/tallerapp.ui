@@ -75,7 +75,7 @@ async function save() {
             <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Marca</label>
             <select
               v-model="form.brand"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="" disabled>Selecciona una marca…</option>
               <option v-for="brand in MOTORCYCLE_BRANDS" :key="brand" :value="brand">
@@ -89,7 +89,7 @@ async function save() {
               v-model="form.model"
               type="text"
               placeholder="CB500, MT-07, Ninja 400…"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div>
@@ -99,7 +99,7 @@ async function save() {
               type="number"
               :min="1900"
               :max="2100"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div>
@@ -110,7 +110,7 @@ async function save() {
               min="1"
               max="65535"
               placeholder="125, 150, 250…"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <p v-if="error" class="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3">{{ error }}</p>
@@ -127,7 +127,7 @@ async function save() {
           <button
             @click="save"
             :disabled="saving || !form.brand || !form.model || !form.year || !form.motor_cc"
-            class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl transition-colors"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-60 rounded-xl transition-colors"
           >
             {{ saving ? 'Guardando…' : (catalog ? 'Guardar cambios' : 'Registrar modelo') }}
           </button>

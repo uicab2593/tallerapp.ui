@@ -83,7 +83,7 @@ async function save() {
                 v-model="form.first_name"
                 type="text"
                 placeholder="Juan"
-                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
             </div>
             <div>
@@ -92,7 +92,7 @@ async function save() {
                 v-model="form.last_name"
                 type="text"
                 placeholder="García"
-                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@ async function save() {
               type="tel"
               placeholder="6141234567"
               maxlength="10"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div>
@@ -114,7 +114,7 @@ async function save() {
               v-model="form.email"
               type="email"
               placeholder="juan@email.com"
-              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <p v-if="error" class="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3">{{ error }}</p>
@@ -131,7 +131,7 @@ async function save() {
           <button
             @click="save"
             :disabled="saving || !form.first_name || !form.last_name || !form.phone"
-            class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl transition-colors"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-60 rounded-xl transition-colors"
           >
             {{ saving ? 'Guardando…' : (customer ? 'Guardar cambios' : 'Registrar cliente') }}
           </button>
