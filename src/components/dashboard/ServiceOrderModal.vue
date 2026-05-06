@@ -86,7 +86,7 @@ async function executeStatusChange() {
     localStatus.value = newStatus
     closeStatusModal()
     emit('saved')
-    if (['not_approved', 'delivered'].includes(newStatus)) emit('close')
+    if (['delivered', 'cancelled'].includes(newStatus)) emit('close')
   } catch (e) {
     statusChangeError.value = e.message ?? 'Error al actualizar el estado.'
   } finally {
@@ -544,8 +544,8 @@ async function save() {
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             </svg>
             <p class="text-sm text-amber-800">
-              <template v-if="pendingStatus === 'not_approved'">
-                La orden quedará marcada como <strong>"No aprobada"</strong> y dejará de aparecer en el tablero activo.
+              <template v-if="pendingStatus === 'cancelled'">
+                La orden quedará marcada como <strong>"Cancelada"</strong> y dejará de aparecer en el tablero activo.
               </template>
               <template v-else>
                 ¿Confirmas el cambio de estado? Esta acción no se puede deshacer.

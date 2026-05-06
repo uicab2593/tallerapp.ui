@@ -5,26 +5,26 @@ import { serviceOrdersApi, usersApi } from '@/api/serviceOrders'
 export const ACTIVE_STATUSES = ['received', 'diagnosed', 'approved', 'in_service', 'service_finished', 'delivered']
 
 const KANBAN_STATUSES = ['received', 'diagnosed', 'approved', 'in_service', 'service_finished']
-const REMOVE_FROM_KANBAN = ['not_approved', 'delivered']
+const REMOVE_FROM_KANBAN = ['delivered', 'cancelled']
 
 export const STATUS_META = {
   received:         { label: 'Recibido',            color: 'blue' },
   diagnosed:        { label: 'Diagnosticado',        color: 'amber' },
   approved:         { label: 'Aprobado',             color: 'emerald' },
-  not_approved:     { label: 'No aprobado',          color: 'red' },
   in_service:       { label: 'En Servicio',          color: 'violet' },
   service_finished: { label: 'Servicio finalizado',  color: 'teal' },
   delivered:        { label: 'Entregado',            color: 'gray' },
+  cancelled:        { label: 'Cancelado',            color: 'red' },
 }
 
 export const STATUS_TRANSITIONS = {
-  received:         ['diagnosed', 'approved', 'not_approved', 'in_service', 'service_finished', 'delivered'],
-  diagnosed:        ['approved', 'not_approved', 'in_service', 'service_finished', 'delivered'],
-  approved:         ['in_service', 'service_finished', 'delivered'],
-  not_approved:     ['in_service', 'service_finished', 'delivered'],
-  in_service:       ['service_finished', 'delivered'],
-  service_finished: ['delivered'],
+  received:         ['diagnosed', 'approved', 'in_service', 'service_finished', 'delivered', 'cancelled'],
+  diagnosed:        ['received', 'approved', 'in_service', 'service_finished', 'delivered', 'cancelled'],
+  approved:         ['received', 'diagnosed', 'in_service', 'service_finished', 'delivered', 'cancelled'],
+  in_service:       ['received', 'diagnosed', 'approved', 'service_finished', 'delivered', 'cancelled'],
+  service_finished: ['received', 'diagnosed', 'approved', 'in_service', 'delivered'],
   delivered:        [],
+  cancelled:        [],
 }
 
 export const useServiceOrdersStore = defineStore('serviceOrders', () => {

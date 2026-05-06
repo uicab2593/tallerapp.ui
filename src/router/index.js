@@ -39,6 +39,12 @@ const router = createRouter({
           component: () => import('../views/CommissionsView.vue'),
           meta: { requiresRoles: ['master', 'admin'] },
         },
+        {
+          path: 'servicios',
+          name: 'services',
+          component: () => import('../views/ServicesView.vue'),
+          meta: { requiresRoles: ['master', 'admin'] },
+        },
         // Los módulos se agregan aquí como rutas hijas
       ],
     },

@@ -228,10 +228,10 @@ onMounted(() => store.fetchUsers())
           </span>
 
           <!-- Acciones -->
-          <div class="flex items-center gap-1 shrink-0">
+          <div class="flex items-center gap-1.5 shrink-0">
             <button
               @click="openBranchModal(user)"
-              class="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+              class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors"
               title="Asignar sucursales"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -241,7 +241,7 @@ onMounted(() => store.fetchUsers())
             </button>
             <button
               @click="openEdit(user)"
-              class="p-1.5 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+              class="p-1.5 rounded-lg bg-brand-50 text-brand-600 hover:bg-brand-100 transition-colors"
               title="Editar"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -250,7 +250,7 @@ onMounted(() => store.fetchUsers())
             </button>
             <button
               @click="confirmDelete(user.id)"
-              class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
               title="Eliminar"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
