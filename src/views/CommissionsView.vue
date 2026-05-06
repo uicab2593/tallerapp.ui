@@ -36,7 +36,7 @@ const dateRange = computed({
     if (!range || range.length < 2) {
       store.setFilters({ date_from: '', date_to: '' })
     } else {
-      const fmt = (d) => d.toISOString().split('T')[0]
+      const fmt = (d) => d.toLocaleDateString('en-CA')
       store.setFilters({ date_from: fmt(range[0]), date_to: fmt(range[1]) })
     }
     if (store.filters.mechanic_id) store.fetchOrders()

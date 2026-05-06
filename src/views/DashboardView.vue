@@ -114,7 +114,7 @@ function serviceTypeLabel(type) {
 }
 
 // ── Date range pickers ───────────────────────────────────────────────────────
-const fmt = (d) => d.toISOString().split('T')[0]
+const fmt = (d) => d.toLocaleDateString('en-CA')
 
 const kanbanDateRange = computed({
   get() {

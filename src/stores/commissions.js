@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { commissionsApi } from '@/api/commissions'
 import { usersApi } from '@/api/serviceOrders'
 
-const todayStr = () => new Date().toISOString().split('T')[0]
+const todayStr = () => new Date().toLocaleDateString('en-CA')
 
 export const useCommissionsStore = defineStore('commissions', () => {
   const mechanics        = ref([])
