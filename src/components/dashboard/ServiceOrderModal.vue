@@ -270,6 +270,7 @@ async function save() {
               <div>
                 <span class="text-gray-500 text-xs">Cliente</span>
                 <p class="font-medium text-gray-800">{{ customer?.first_name }} {{ customer?.last_name }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ customer?.phone_number }}</p>
               </div>
               <div>
                 <span class="text-gray-500 text-xs">Placa</span>
