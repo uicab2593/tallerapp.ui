@@ -332,8 +332,8 @@ onMounted(() => {
       </div>
 
       <!-- Tab: Entregados -->
-      <div v-else-if="activeTab === 'delivered'" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+      <div v-else-if="activeTab === 'delivered'" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col flex-1 min-h-0">
+        <div class="overflow-x-auto overflow-y-auto flex-1">
           <table class="w-full text-sm text-left">
             <thead class="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500">
               <tr>
@@ -428,8 +428,8 @@ onMounted(() => {
       </div>
 
       <!-- Tab: Pendientes -->
-      <div v-else-if="activeTab === 'pending'" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+      <div v-else-if="activeTab === 'pending'" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col flex-1 min-h-0">
+        <div class="overflow-x-auto overflow-y-auto flex-1">
           <table class="w-full text-sm text-left">
             <thead class="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500">
               <tr>
