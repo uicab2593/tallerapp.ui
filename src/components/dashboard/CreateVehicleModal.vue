@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { vehicleCatalogsApi } from '@/api/vehicleCatalogs'
-import CreateVehicleCatalogModal from './CreateVehicleCatalogModal.vue'
 
 const props = defineProps({
   customer:  { type: Object, required: true },
@@ -11,13 +10,11 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close'])
 
 // ── Catálogo autocomplete ────────────────────────────────────────────────────
-const searchQuery    = ref('')
-const searchResults  = ref([])
-const isSearching    = ref(false)
-const showDropdown   = ref(false)
+const searchQuery     = ref('')
+const searchResults   = ref([])
+const isSearching     = ref(false)
+const showDropdown    = ref(false)
 const selectedCatalog = ref(null)
-const showCatalogModal = ref(false)
-const catalogToEdit  = ref(null)
 
 let debounceTimer = null
 
@@ -52,21 +49,6 @@ function onSearchBlur() {
   setTimeout(() => { showDropdown.value = false }, 200)
 }
 
-function openNewCatalog() {
-  catalogToEdit.value  = null
-  showCatalogModal.value = true
-}
-
-function openEditCatalog() {
-  catalogToEdit.value  = selectedCatalog.value
-  showCatalogModal.value = true
-}
-
-function onCatalogSaved(catalog) {
-  showCatalogModal.value = false
-  selectCatalog(catalog)
-}
-
 // ── Vehicle form ─────────────────────────────────────────────────────────────
 const form = ref({ color: '', plate: '' })
 
@@ -76,7 +58,7 @@ watch(
     if (d) {
       selectedCatalog.value = d.vehicleCatalog
       searchQuery.value     = `${d.vehicleCatalog.brand} ${d.vehicleCatalog.model} ${d.vehicleCatalog.year}`
-      form.value            = { color: d.color, plate: d.plate }
+      form.value            = { color: d.color ?? '', plate: d.plate ?? '' }
     }
   },
   { immediate: true },
@@ -87,13 +69,11 @@ const error = ref(null)
 function save() {
   error.value = null
   if (!selectedCatalog.value) { error.value = 'Selecciona un modelo de moto.'; return }
-  if (!form.value.color)       { error.value = 'Ingresa el color.'; return }
-  if (!form.value.plate)       { error.value = 'Ingresa la placa.'; return }
 
   emit('saved', {
     vehicleCatalog: selectedCatalog.value,
-    color:          form.value.color,
-    plate:          form.value.plate,
+    color:          form.value.color || null,
+    plate:          form.value.plate  || null,
   })
 }
 </script>
@@ -132,8 +112,6 @@ function save() {
             <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
               Modelo de moto
             </label>
-
-            <!-- Campo de búsqueda -->
             <div class="relative">
               <input
                 v-model="searchQuery"
@@ -164,62 +142,34 @@ function save() {
                   @mousedown.prevent="selectCatalog(cat)"
                   class="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors"
                 >
-                  {{ cat.brand }} {{ cat.model }} <span class="text-gray-400">{{ cat.year }}</span>
+                  {{ cat.brand }} {{ cat.model }} <span class="text-gray-400">{{ cat.year }}</span><span v-if="cat.motor_cc" class="text-gray-400"> · {{ cat.motor_cc }}cc</span>
                 </button>
                 <div v-if="!searchResults.length" class="px-4 py-2.5 text-sm text-gray-400">
                   Sin resultados
                 </div>
-                <button
-                  type="button"
-                  @mousedown.prevent="openNewCatalog"
-                  class="w-full text-left px-4 py-2.5 text-sm text-brand-600 font-medium border-t border-gray-200 hover:bg-brand-50 transition-colors flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Registrar nuevo modelo
-                </button>
               </div>
             </div>
 
-            <!-- Catálogo seleccionado -->
+            <!-- Modelo seleccionado -->
             <div
               v-if="selectedCatalog"
-              class="mt-2 flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5"
+              class="mt-2 bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5"
             >
-              <div>
-                <p class="text-sm font-semibold text-brand-800">
-                  {{ selectedCatalog.brand }} {{ selectedCatalog.model }}
-                </p>
-                <p class="text-xs text-brand-500">{{ selectedCatalog.year }}</p>
-              </div>
-              <button
-                type="button"
-                @click="openEditCatalog"
-                class="text-xs font-medium text-brand-600 hover:text-brand-800 underline"
-              >
-                Editar
-              </button>
+              <p class="text-sm font-semibold text-brand-800">
+                {{ selectedCatalog.brand }} {{ selectedCatalog.model }}
+              </p>
+              <p class="text-xs text-brand-500">
+                {{ selectedCatalog.year }}<span v-if="selectedCatalog.motor_cc"> · {{ selectedCatalog.motor_cc }}cc</span>
+              </p>
             </div>
-
-            <!-- Botón rápido nuevo modelo (cuando no hay dropdown abierto) -->
-            <button
-              v-if="!showDropdown && !selectedCatalog"
-              type="button"
-              @click="openNewCatalog"
-              class="mt-2 text-xs text-brand-600 font-medium hover:underline flex items-center gap-1"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Registrar nuevo modelo
-            </button>
           </div>
 
           <!-- Color y Placa -->
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Color</label>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                Color <span class="text-gray-400 font-normal normal-case">(opcional)</span>
+              </label>
               <input
                 v-model="form.color"
                 type="text"
@@ -228,7 +178,9 @@ function save() {
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Placa</label>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                Placa <span class="text-gray-400 font-normal normal-case">(opcional)</span>
+              </label>
               <input
                 v-model="form.plate"
                 type="text"
@@ -260,12 +212,4 @@ function save() {
       </div>
     </div>
   </Teleport>
-
-  <!-- Modal catálogo anidado -->
-  <CreateVehicleCatalogModal
-    v-if="showCatalogModal"
-    :catalog="catalogToEdit"
-    @saved="onCatalogSaved"
-    @close="showCatalogModal = false"
-  />
 </template>

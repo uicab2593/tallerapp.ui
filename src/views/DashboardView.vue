@@ -3,7 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useServiceOrdersStore, STATUS_META } from '@/stores/serviceOrders'
 import ServiceOrderCard from '@/components/dashboard/ServiceOrderCard.vue'
 import ServiceOrderModal from '@/components/dashboard/ServiceOrderModal.vue'
-import CreateServiceModal from '@/components/dashboard/CreateServiceModal.vue'
+import CreateServiceModal from '@/components/dashboard/ServiceCreateModal.vue'
+import AppToast from '@/components/ui/AppToast.vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { es } from 'date-fns/locale'
@@ -11,6 +12,7 @@ import { es } from 'date-fns/locale'
 const store = useServiceOrdersStore()
 const selectedOrder   = ref(null)
 const showCreateModal  = ref(false)
+const toast            = ref(null)
 const activeTab        = ref('active')
 const modalHadChanges  = ref(false)
 
@@ -28,6 +30,11 @@ function openModal(order) {
 
 function onModalSaved() {
   modalHadChanges.value = true
+}
+
+function onServiceCreated() {
+  showCreateModal.value = false
+  toast.value.show('Servicio registrado con éxito')
 }
 
 function closeModal() {
@@ -577,7 +584,10 @@ onMounted(async () => {
   <CreateServiceModal
     v-if="showCreateModal"
     @close="showCreateModal = false"
+    @created="onServiceCreated"
   />
+
+  <AppToast ref="toast" />
 </template>
 
 <style>

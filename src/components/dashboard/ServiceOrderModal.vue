@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useServiceOrdersStore, STATUS_META, STATUS_TRANSITIONS } from '@/stores/serviceOrders'
 import { serviceOrdersApi } from '@/api/serviceOrders'
+import { vehiclesApi } from '@/api/vehicles'
 import ServiceOrderNotes from '@/components/dashboard/ServiceOrderNotes.vue'
 import AppToast from '@/components/ui/AppToast.vue'
 
@@ -19,9 +20,8 @@ const localStatus = ref(props.order.status)
 watch(() => props.order.status, (v) => { localStatus.value = v })
 
 // ── Form state (no status here) ──────────────────────────────────────────────
-const saving    = ref(false)
-const saveError = ref(null)
-const form      = ref({})
+const saving = ref(false)
+const form   = ref({})
 
 function initForm() {
   form.value = {
@@ -32,6 +32,9 @@ function initForm() {
     external_service_id: props.order.external_service_id ?? '',
     labor_cost:          props.order.labor_cost ?? 0,
     mechanics:           props.order.mechanics?.map((m) => m.user_id) ?? [],
+    mileage:             props.order.mileage ?? 0,
+    plate:               props.order.vehicle?.plate ?? '',
+    color:               props.order.vehicle?.color ?? '',
   }
 }
 
@@ -171,22 +174,28 @@ function toggleMechanic(id) {
 
 // ── Save form ────────────────────────────────────────────────────────────────
 async function save() {
-  saving.value    = true
-  saveError.value = null
+  saving.value = true
   try {
-    await store.updateOrder(props.order.id, {
-      service_type:        form.value.service_type,
-      customer_report:     form.value.customer_report,
-      diagnosis:           form.value.diagnosis || null,
-      service_description: form.value.service_description || null,
-      external_service_id: form.value.external_service_id || null,
-      labor_cost:          parseFloat(form.value.labor_cost) || 0,
-      mechanics:           form.value.mechanics,
-    })
+    await Promise.all([
+      store.updateOrder(props.order.id, {
+        service_type:        form.value.service_type,
+        customer_report:     form.value.customer_report,
+        diagnosis:           form.value.diagnosis || null,
+        service_description: form.value.service_description || null,
+        external_service_id: form.value.external_service_id || null,
+        labor_cost:          parseFloat(form.value.labor_cost) || 0,
+        mechanics:           form.value.mechanics,
+        mileage:             Number(form.value.mileage) || 0,
+      }),
+      vehiclesApi.update(props.order.vehicle.id, {
+        plate: form.value.plate || null,
+        color: form.value.color || null,
+      }),
+    ])
     emit('saved')
     toast.value.show('Registro actualizado con éxito')
   } catch (e) {
-    saveError.value = e.message
+    toast.value.show(e.response?.data?.message ?? e.message, 'error')
   } finally {
     saving.value = false
   }
@@ -242,6 +251,11 @@ async function save() {
                 Historial
               </button>
             </div>
+            <p class="text-xs text-gray-400 mt-2">
+              Registrado por <span class="font-medium text-gray-500">{{ order.creator?.name }}</span>
+              el {{ formattedDate }}
+              <span class="text-brand-500 font-medium">({{ elapsed }})</span>
+            </p>
           </div>
           <button
             @click="emit('close')"
@@ -262,7 +276,7 @@ async function save() {
           <!-- Vehículo y cliente -->
           <section>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-3">Vehículo y cliente</h3>
-            <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
                 <span class="text-gray-500 text-xs">Vehículo</span>
                 <p class="font-medium text-gray-800">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}<span v-if="catalog?.motor_cc" class="text-gray-500 font-normal ml-1">{{ catalog.motor_cc }}cc</span></p>
@@ -273,27 +287,35 @@ async function save() {
                 <p class="text-xs text-gray-500 mt-0.5">{{ customer?.phone_number }}</p>
               </div>
               <div>
-                <span class="text-gray-500 text-xs">Placa</span>
-                <p class="font-medium text-gray-800">{{ vehicle?.plate }}</p>
+                <label class="block text-gray-500 text-xs mb-1">Placa</label>
+                <input
+                  v-model="form.plate"
+                  type="text"
+                  placeholder="—"
+                  class="w-full rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                />
               </div>
               <div>
-                <span class="text-gray-500 text-xs">Color</span>
-                <p class="font-medium text-gray-800">{{ vehicle?.color }}</p>
+                <label class="block text-gray-500 text-xs mb-1">Color</label>
+                <input
+                  v-model="form.color"
+                  type="text"
+                  placeholder="—"
+                  class="w-full rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                />
               </div>
               <div>
-                <span class="text-gray-500 text-xs">Kilometraje</span>
-                <p class="font-medium text-gray-800">{{ order.mileage?.toLocaleString('es-MX') }} km</p>
-              </div>
-              <div>
-                <span class="text-gray-500 text-xs">Registrado por</span>
-                <p class="font-medium text-gray-800">{{ order.creator?.name }}</p>
-              </div>
-              <div class="col-span-2">
-                <span class="text-gray-500 text-xs">Fecha de registro</span>
-                <p class="font-medium text-gray-800">
-                  {{ formattedDate }}
-                  <span class="text-brand-600 font-semibold">({{ elapsed }})</span>
-                </p>
+                <label class="block text-gray-500 text-xs mb-1">Kilometraje</label>
+                <div class="relative">
+                  <input
+                    v-model="form.mileage"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    class="w-full rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 pr-8 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                  />
+                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none select-none">km</span>
+                </div>
               </div>
             </div>
           </section>
@@ -394,11 +416,6 @@ async function save() {
               />
             </div>
           </section>
-
-          <!-- Error -->
-          <p v-if="saveError" class="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3">
-            {{ saveError }}
-          </p>
 
         </div>
 
