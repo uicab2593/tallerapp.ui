@@ -75,7 +75,7 @@ async function executeDelete() {
     await store.removeItem(confirmDeleteId.value)
     confirmDeleteId.value = null
   } catch (e) {
-    deleteError.value = e.response?.data?.message ?? 'Error al eliminar.'
+    deleteError.value = e.message ?? 'Error al eliminar.'
   }
 }
 
