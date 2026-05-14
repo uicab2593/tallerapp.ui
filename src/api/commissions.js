@@ -4,4 +4,6 @@ export const commissionsApi = {
   getOrders: (params = {}) => api.get('/service-orders', { params }),
   bulkUpdateCommissions: (commissions) =>
     api.patch('/service-order-mechanics/bulk-commission', { commissions }),
+  bulkPay: (ids) =>
+    api.post('/service-order-mechanics/bulk-pay', { ids }),
 }

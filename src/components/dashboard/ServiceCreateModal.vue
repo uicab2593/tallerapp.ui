@@ -4,6 +4,7 @@ import { customersApi } from '@/api/customers'
 import { vehicleCatalogsApi } from '@/api/vehicleCatalogs'
 import { useServiceOrdersStore } from '@/stores/serviceOrders'
 import AppToast from '@/components/ui/AppToast.vue'
+import { formatPhone } from '@/utils/phone'
 
 const emit = defineEmits(['close', 'created'])
 const store = useServiceOrdersStore()
@@ -42,7 +43,7 @@ async function onSearchInput() {
     return
   }
 
-  searchWasPhone.value = /^\d+$/.test(q)
+  searchWasPhone.value = /^\+?\d[\d\s\-]{3,}$/.test(q)
   isSearching.value    = true
   updateDropdownPosition()
   showDropdown.value   = true
@@ -109,7 +110,7 @@ function startEditCustomer() {
   editCustForm.value = {
     first_name: customer.value.first_name,
     last_name:  customer.value.last_name,
-    phone:      customer.value.phone_number,
+    phone:      customer.value.phone_e164,
   }
   editingCustomer.value = true
 }
@@ -371,7 +372,7 @@ async function save() {
                 >
                   <div>
                     <span class="font-medium text-gray-800">{{ c.first_name }} {{ c.last_name }}</span>
-                    <span class="text-gray-400 ml-2 text-xs">{{ c.phone_number }}</span>
+                    <span class="text-gray-400 ml-2 text-xs">{{ formatPhone(c) }}</span>
                   </div>
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -403,7 +404,7 @@ async function save() {
               >
                 <div>
                   <p class="text-sm font-semibold text-emerald-800">{{ customer.first_name }} {{ customer.last_name }}</p>
-                  <p class="text-xs text-emerald-600">{{ customer.phone_number }}</p>
+                  <p class="text-xs text-emerald-600">{{ formatPhone(customer) }}</p>
                 </div>
                 <div class="flex items-center gap-3 shrink-0">
                   <button @click="startEditCustomer" class="text-xs font-medium text-emerald-700 hover:text-emerald-900 underline">
@@ -431,7 +432,7 @@ async function save() {
                 </div>
                 <div>
                   <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Teléfono</label>
-                  <input v-model="editCustForm.phone" type="tel" maxlength="10" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                  <input v-model="editCustForm.phone" type="tel" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
                 </div>
                 <div class="flex justify-end gap-2 pt-1">
                   <button @click="cancelEditCustomer" class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 rounded-lg transition-colors">Cancelar</button>
@@ -459,8 +460,8 @@ async function save() {
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Teléfono (10 dígitos)</label>
-                <input v-model="newCustForm.phone" type="tel" placeholder="6141234567" maxlength="10" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Teléfono</label>
+                <input v-model="newCustForm.phone" type="tel" placeholder="6141234567 o +526141234567" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
               </div>
             </div>
           </section>

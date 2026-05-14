@@ -6,14 +6,14 @@ import { usersApi } from '@/api/serviceOrders'
 const todayStr = () => new Date().toLocaleDateString('en-CA')
 
 export const useCommissionsStore = defineStore('commissions', () => {
-  const mechanics        = ref([])
-  const deliveredOrders  = ref([])
-  const pendingOrders    = ref([])
-  const loading          = ref(false)
-  const error            = ref(null)
-  const saving           = ref(false)
-  const saveError        = ref(null)
-  const saveSuccess      = ref(false)
+  const mechanics      = ref([])
+  const payableOrders  = ref([])
+  const pendingOrders  = ref([])
+  const paidOrders     = ref([])
+  const loading        = ref(false)
+  const error          = ref(null)
+  const saving         = ref(false)
+  const paying         = ref(false)
 
   const filters = ref({
     mechanic_id: null,
@@ -39,41 +39,71 @@ export const useCommissionsStore = defineStore('commissions', () => {
     loading.value = true
     error.value   = null
     try {
-      const [deliveredRes, pendingRes] = await Promise.all([
-        commissionsApi.getOrders({
-          mechanic_id: filters.value.mechanic_id,
-          status:      'delivered',
-          date_from:   filters.value.date_from,
-          date_to:     filters.value.date_to,
-        }),
-        commissionsApi.getOrders({
-          mechanic_id: filters.value.mechanic_id,
-          date_to:     filters.value.date_to,
-        }),
+      const baseParams = { mechanic_id: filters.value.mechanic_id }
+      const paidParams = {
+        ...baseParams,
+        commission_status: 'paid',
+        date_from: filters.value.date_from,
+        date_to:   filters.value.date_to,
+      }
+
+      const [payableRes, pendingRes, paidRes] = await Promise.all([
+        commissionsApi.getOrders({ ...baseParams, commission_status: 'payable' }),
+        commissionsApi.getOrders({ ...baseParams, commission_status: 'pending' }),
+        commissionsApi.getOrders(paidParams),
       ])
-      deliveredOrders.value = deliveredRes.data
-      pendingOrders.value   = pendingRes.data.filter(o => o.status !== 'delivered')
+
+      payableOrders.value = payableRes.data
+      pendingOrders.value = pendingRes.data
+      paidOrders.value    = paidRes.data
     } catch (e) {
-      error.value = e.response?.data?.message ?? 'Error al cargar los servicios'
+      error.value = e.message
     } finally {
       loading.value = false
     }
   }
 
   async function bulkSave(commissions) {
-    saving.value      = true
-    saveError.value   = null
-    saveSuccess.value = false
+    saving.value = true
     try {
       await commissionsApi.bulkUpdateCommissions(commissions)
-      saveSuccess.value = true
-      setTimeout(() => { saveSuccess.value = false }, 3000)
       await fetchOrders()
     } catch (e) {
-      saveError.value = e.response?.data?.message ?? 'Error al guardar las comisiones'
+      throw e
     } finally {
       saving.value = false
     }
+  }
+
+  async function togglePayable(assignmentId, makePayable) {
+    const newStatus = makePayable ? 'payable' : 'pending'
+    await commissionsApi.bulkUpdateCommissions([{
+      id:                assignmentId,
+      commission_amount: getCommissionAmount(assignmentId),
+      commission_status: newStatus,
+    }])
+    await fetchOrders()
+  }
+
+  async function markAsPaid(ids) {
+    paying.value = true
+    try {
+      await commissionsApi.bulkPay(ids)
+      await fetchOrders()
+    } catch (e) {
+      throw e
+    } finally {
+      paying.value = false
+    }
+  }
+
+  function getCommissionAmount(assignmentId) {
+    const allOrders = [...payableOrders.value, ...pendingOrders.value, ...paidOrders.value]
+    for (const order of allOrders) {
+      const a = order.mechanics?.find(m => m.id === assignmentId)
+      if (a) return parseFloat(a.commission_amount ?? 0)
+    }
+    return 0
   }
 
   function setFilters(newFilters) {
@@ -82,18 +112,20 @@ export const useCommissionsStore = defineStore('commissions', () => {
 
   return {
     mechanics,
-    deliveredOrders,
+    payableOrders,
     pendingOrders,
+    paidOrders,
     loading,
     error,
     saving,
-    saveError,
-    saveSuccess,
+    paying,
     filters,
     selectedMechanic,
     fetchMechanics,
     fetchOrders,
     bulkSave,
+    togglePayable,
+    markAsPaid,
     setFilters,
   }
 })

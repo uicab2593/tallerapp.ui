@@ -5,6 +5,7 @@ import { serviceOrdersApi } from '@/api/serviceOrders'
 import { vehiclesApi } from '@/api/vehicles'
 import ServiceOrderNotes from '@/components/dashboard/ServiceOrderNotes.vue'
 import AppToast from '@/components/ui/AppToast.vue'
+import { formatPhone } from '@/utils/phone'
 
 const props = defineProps({
   order: { type: Object, required: true },
@@ -284,7 +285,7 @@ async function save() {
               <div>
                 <span class="text-gray-500 text-xs">Cliente</span>
                 <p class="font-medium text-gray-800">{{ customer?.first_name }} {{ customer?.last_name }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ customer?.phone_number }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ formatPhone(customer) }}</p>
               </div>
               <div>
                 <label class="block text-gray-500 text-xs mb-1">Placa</label>

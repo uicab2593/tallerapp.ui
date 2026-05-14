@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
 import CustomerDetailModal from '@/components/customers/CustomerDetailModal.vue'
+import { formatPhone } from '@/utils/phone'
 
 const store           = useCustomersStore()
 const selectedCustomer = ref(null)
@@ -198,7 +199,7 @@ onMounted(() => {
               </td>
 
               <td class="px-4 py-3 text-gray-600 tabular-nums whitespace-nowrap">
-                {{ customer.phone_number }}
+                {{ formatPhone(customer) }}
               </td>
 
               <td class="px-4 py-3 text-gray-600">

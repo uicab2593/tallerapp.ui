@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { customersApi } from '@/api/customers'
 import { vehiclesApi } from '@/api/vehicles'
+import { formatPhone } from '@/utils/phone'
+import AppToast from '@/components/ui/AppToast.vue'
 
 const props = defineProps({
   customer: { type: Object, required: true },
@@ -29,33 +31,30 @@ watch(() => props.customer?.id, (id) => { if (id) loadVehicles(id) }, { immediat
 const editingCustomer = ref(false)
 const customerForm    = ref({})
 const savingCustomer  = ref(false)
-const customerError   = ref(null)
+const toast           = ref(null)
 
 function startEditCustomer() {
   customerForm.value = {
     first_name: props.customer.first_name,
     last_name:  props.customer.last_name,
-    phone:      props.customer.phone_number,
+    phone:      props.customer.phone_e164,
     email:      props.customer.email ?? '',
   }
-  customerError.value  = null
   editingCustomer.value = true
 }
 
 function cancelEditCustomer() {
   editingCustomer.value = false
-  customerError.value   = null
 }
 
 async function saveCustomer() {
   savingCustomer.value = true
-  customerError.value  = null
   try {
     await customersApi.update(props.customer.id, customerForm.value)
     emit('saved')
     editingCustomer.value = false
   } catch (e) {
-    customerError.value = e.response?.data?.message ?? 'Error al guardar los datos del cliente'
+    toast.value?.show(e.message, 'error')
   } finally {
     savingCustomer.value = false
   }
@@ -148,7 +147,7 @@ async function saveVehicle(vehicleId) {
             </div>
             <div>
               <dt class="text-gray-400 text-xs mb-0.5">Teléfono</dt>
-              <dd class="font-medium text-gray-800">{{ customer.phone_number }}</dd>
+              <dd class="font-medium text-gray-800">{{ formatPhone(customer) }}</dd>
             </div>
             <div class="col-span-2">
               <dt class="text-gray-400 text-xs mb-0.5">Email</dt>
@@ -193,8 +192,6 @@ async function saveVehicle(vehicleId) {
                 />
               </div>
             </div>
-
-            <p v-if="customerError" class="text-xs text-red-600">{{ customerError }}</p>
 
             <div class="flex items-center gap-2">
               <button
@@ -327,4 +324,6 @@ async function saveVehicle(vehicleId) {
 
     </div>
   </div>
+
+  <AppToast ref="toast" />
 </template>
