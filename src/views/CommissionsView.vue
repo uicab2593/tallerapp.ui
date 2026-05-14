@@ -153,10 +153,16 @@ function openPayConfirm() {
 
 async function confirmPay() {
   showPayConfirm.value = false
+  const ids = [...selectedForPay.value]
   try {
-    await store.markAsPaid([...selectedForPay.value])
-    selectedForPay.value.clear()
-    toast.value?.show('Comisiones registradas como pagadas', 'success')
+    const commissions = ids.map(id => ({
+      id,
+      commission_amount: parseFloat(localCommissions.value[id]) || 0,
+    }))
+    await store.bulkSave(commissions)
+    await store.markAsPaid(ids)
+    selectedForPay.value = new Set()
+    toast.value?.show('Comisiones guardadas y registradas como pagadas', 'success')
   } catch (e) {
     toast.value?.show(e.message, 'error')
   }
@@ -455,8 +461,8 @@ onMounted(() => {
               :disabled="selectedCount === 0 || store.paying"
               class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <span v-if="store.paying">Registrando...</span>
-              <span v-else>Registrar pago ({{ selectedCount }})</span>
+              <span v-if="store.paying">Guardando...</span>
+              <span v-else>Guardar montos y pagar ({{ selectedCount }})</span>
             </button>
           </template>
         </div>
@@ -866,9 +872,10 @@ onMounted(() => {
       @click.self="showPayConfirm = false"
     >
       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
-        <h2 class="text-lg font-bold text-gray-900 mb-1">Confirmar pago de comisiones</h2>
+        <h2 class="text-lg font-bold text-gray-900 mb-1">Guardar montos y registrar pago</h2>
         <p class="text-sm text-gray-500 mb-5">
-          Se registrarán como pagadas <span class="font-semibold text-gray-800">{{ selectedCount }} {{ selectedCount === 1 ? 'comisión' : 'comisiones' }}</span>
+          Se guardarán los montos y se registrarán como pagadas
+          <span class="font-semibold text-gray-800">{{ selectedCount }} {{ selectedCount === 1 ? 'comisión' : 'comisiones' }}</span>
           por un total de <span class="font-semibold text-emerald-700">{{ formatCost(selectedPayAmount) }}</span>.
           Esta acción no se puede deshacer.
         </p>
