@@ -5,6 +5,7 @@ import ServiceOrderCard from '@/components/dashboard/ServiceOrderCard.vue'
 import ServiceOrderModal from '@/components/dashboard/ServiceOrderModal.vue'
 import CreateServiceModal from '@/components/dashboard/ServiceCreateModal.vue'
 import AppToast from '@/components/ui/AppToast.vue'
+import VehicleDisplay from '@/components/ui/VehicleDisplay.vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { es } from 'date-fns/locale'
@@ -460,12 +461,8 @@ onMounted(async () => {
                 <td class="px-4 py-3 font-medium text-gray-800">
                   {{ order.vehicle?.customer?.first_name }} {{ order.vehicle?.customer?.last_name }}
                 </td>
-                <td class="px-4 py-3 text-gray-700">
-                  {{ order.vehicle?.vehicle_catalog?.brand }}
-                  {{ order.vehicle?.vehicle_catalog?.model }}
-                  {{ order.vehicle?.vehicle_catalog?.year }}
-                  <span v-if="order.vehicle?.vehicle_catalog?.motor_cc" class="text-gray-400 text-xs ml-0.5">{{ order.vehicle.vehicle_catalog.motor_cc }}cc</span>
-                  <span class="text-gray-400 text-xs ml-1">· {{ order.vehicle?.color }}</span>
+                <td class="px-4 py-3">
+                  <VehicleDisplay v-if="order.vehicle" :vehicle="order.vehicle" />
                 </td>
                 <td class="px-4 py-3">
                   <span

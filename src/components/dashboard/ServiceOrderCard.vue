@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { STATUS_META } from '@/stores/serviceOrders'
+import VehicleDisplay from '@/components/ui/VehicleDisplay.vue'
 
 const props = defineProps({
   order: { type: Object, required: true },
@@ -8,8 +9,6 @@ const props = defineProps({
 
 const emit = defineEmits(['view'])
 
-const catalog  = computed(() => props.order.vehicle?.vehicle_catalog)
-const vehicle  = computed(() => props.order.vehicle)
 const customer = computed(() => props.order.vehicle?.customer)
 
 const mechanicNames = computed(() =>
@@ -57,15 +56,7 @@ const colors = computed(() => COLOR_CLASSES[meta.value.color] ?? COLOR_CLASSES.b
 
     <!-- Header: vehicle + status badge -->
     <div class="flex items-start justify-between gap-2">
-      <div>
-        <p class="font-semibold text-gray-900 text-sm leading-tight">
-          {{ catalog?.brand }} {{ catalog?.model }}<br>
-          <span v-if="catalog?.motor_cc" class="text-gray-700 font-normal text-xs">{{ catalog?.year }} {{ catalog.motor_cc }}cc</span>
-        </p>
-        <p class="text-xs text-gray-500 mt-0.5">
-          {{ vehicle?.plate }} · {{ vehicle?.color }}
-        </p>
-      </div>
+      <VehicleDisplay :vehicle="order.vehicle" />
       <span
         :class="['inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full shrink-0', colors.badge]"
       >

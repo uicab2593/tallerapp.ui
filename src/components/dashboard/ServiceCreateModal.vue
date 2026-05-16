@@ -4,6 +4,7 @@ import { customersApi } from '@/api/customers'
 import { vehicleCatalogsApi } from '@/api/vehicleCatalogs'
 import { useServiceOrdersStore } from '@/stores/serviceOrders'
 import AppToast from '@/components/ui/AppToast.vue'
+import VehicleCatalogDisplay from '@/components/ui/VehicleCatalogDisplay.vue'
 import { formatPhone } from '@/utils/phone'
 
 const emit = defineEmits(['close', 'created'])
@@ -556,9 +557,7 @@ async function save() {
                       @mousedown.prevent="selectCatalog(cat)"
                       class="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors"
                     >
-                      {{ cat.brand }} {{ cat.model }}
-                      <span class="text-gray-400">{{ cat.year }}</span>
-                      <span v-if="cat.motor_cc" class="text-gray-400"> · {{ cat.motor_cc }}cc</span>
+                      <VehicleCatalogDisplay :catalog="cat" />
                     </button>
                     <div v-if="!catalogResults.length" class="px-4 py-2.5 text-sm text-gray-400">
                       Sin resultados
@@ -569,14 +568,9 @@ async function save() {
                 <!-- Modelo seleccionado -->
                 <div
                   v-if="catalogSelected"
-                  class="mt-2 bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5"
+                  class="mt-2 bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm text-brand-800"
                 >
-                  <p class="text-sm font-semibold text-brand-800">
-                    {{ catalogSelected.brand }} {{ catalogSelected.model }}
-                  </p>
-                  <p class="text-xs text-brand-500">
-                    {{ catalogSelected.year }}<span v-if="catalogSelected.motor_cc"> · {{ catalogSelected.motor_cc }}cc</span>
-                  </p>
+                  <VehicleCatalogDisplay :catalog="catalogSelected" />
                 </div>
               </div>
 

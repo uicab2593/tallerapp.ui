@@ -8,16 +8,17 @@ export const useVehicleCatalogsStore = defineStore('vehicleCatalogs', () => {
   const loading = ref(false)
   const error   = ref(null)
 
-  const filters = ref({ brand: '', model: '', year: '' })
+  const filters = ref({ brand: '', model: '', year: '', color: '' })
 
   async function fetchItems(page = 1) {
     loading.value = true
     error.value   = null
     try {
       const params = { page, per_page: meta.value.per_page }
-      if (filters.value.brand) params.brand = filters.value.brand
-      if (filters.value.model) params.model = filters.value.model
-      if (filters.value.year)  params.year  = filters.value.year
+      if (filters.value.brand)  params.brand  = filters.value.brand
+      if (filters.value.model)  params.model  = filters.value.model
+      if (filters.value.year)   params.year   = filters.value.year
+      if (filters.value.color)  params.color  = filters.value.color
       const res = await vehicleCatalogsApi.list(params)
       items.value = res.data.data
       meta.value = {
@@ -57,7 +58,7 @@ export const useVehicleCatalogsStore = defineStore('vehicleCatalogs', () => {
   }
 
   function resetFilters() {
-    filters.value = { brand: '', model: '', year: '' }
+    filters.value = { brand: '', model: '', year: '', color: '' }
   }
 
   return { items, meta, loading, error, filters, fetchItems, addItem, editItem, removeItem, setFilters, resetFilters }

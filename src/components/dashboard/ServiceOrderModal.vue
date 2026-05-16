@@ -5,6 +5,7 @@ import { serviceOrdersApi } from '@/api/serviceOrders'
 import { vehiclesApi } from '@/api/vehicles'
 import ServiceOrderNotes from '@/components/dashboard/ServiceOrderNotes.vue'
 import AppToast from '@/components/ui/AppToast.vue'
+import VehicleCatalogDisplay from '@/components/ui/VehicleCatalogDisplay.vue'
 import { formatPhone } from '@/utils/phone'
 
 const props = defineProps({
@@ -218,7 +219,7 @@ async function save() {
           <div class="flex-1 min-w-0">
             <h2 class="text-lg font-bold text-gray-900">Orden #{{ order.id }}</h2>
             <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-              <p class="text-sm text-gray-500">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}<span v-if="catalog?.motor_cc" class="ml-1">{{ catalog.motor_cc }}cc</span></p>
+              <p class="text-sm text-gray-500"><VehicleCatalogDisplay v-if="catalog" :catalog="catalog" /></p>
               <span class="text-gray-300 text-xs select-none">·</span>
               <!-- Status badge -->
               <span
@@ -280,7 +281,7 @@ async function save() {
             <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
                 <span class="text-gray-500 text-xs">Vehículo</span>
-                <p class="font-medium text-gray-800">{{ catalog?.brand }} {{ catalog?.model }} {{ catalog?.year }}<span v-if="catalog?.motor_cc" class="text-gray-500 font-normal ml-1">{{ catalog.motor_cc }}cc</span></p>
+                <p class="font-medium text-gray-800"><VehicleCatalogDisplay v-if="catalog" :catalog="catalog" /></p>
               </div>
               <div>
                 <span class="text-gray-500 text-xs">Cliente</span>

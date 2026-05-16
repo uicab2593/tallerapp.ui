@@ -12,7 +12,7 @@ const saving       = ref(false)
 const saveError    = ref(null)
 const deleteError  = ref(null)
 
-const defaultForm = () => ({ brand: '', model: '', year: '', motor_cc: '' })
+const defaultForm = () => ({ brand: '', model: '', year: '', motor_cc: '', color: '' })
 const form = ref(defaultForm())
 const isEditing = computed(() => !!editingItem.value)
 
@@ -30,6 +30,7 @@ function openEdit(item) {
     model:    item.model,
     year:     String(item.year),
     motor_cc: item.motor_cc ? String(item.motor_cc) : '',
+    color:    item.color ?? '',
   }
   saveError.value = null
   showModal.value = true
@@ -49,6 +50,7 @@ async function submitForm() {
     model:    form.value.model,
     year:     parseInt(form.value.year),
     motor_cc: parseInt(form.value.motor_cc),
+    color:    form.value.color || null,
   }
 
   try {
@@ -59,7 +61,7 @@ async function submitForm() {
     }
     closeModal()
   } catch (e) {
-    saveError.value = e.response?.data?.message ?? e.message ?? 'Error al guardar.'
+    saveError.value = e.message ?? 'Error al guardar.'
   } finally {
     saving.value = false
   }
@@ -94,7 +96,7 @@ function goToPage(page) {
 }
 
 const hasFilters = computed(() =>
-  store.filters.brand || store.filters.model || store.filters.year
+  store.filters.brand || store.filters.model || store.filters.year || store.filters.color
 )
 
 const pageNumbers = computed(() => {
@@ -172,6 +174,18 @@ onMounted(() => store.fetchItems(1))
           />
         </div>
 
+        <div class="flex flex-col gap-1 min-w-36">
+          <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Color</label>
+          <input
+            type="text"
+            :value="store.filters.color"
+            @input="store.setFilters({ color: $event.target.value })"
+            @keyup.enter="applyFilters"
+            placeholder="Rojo, Negro..."
+            class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
+          />
+        </div>
+
         <div class="flex items-center gap-2">
           <button
             @click="applyFilters"
@@ -219,6 +233,7 @@ onMounted(() => store.fetchItems(1))
               <th class="px-4 py-3 font-semibold">Modelo</th>
               <th class="px-4 py-3 font-semibold">Año</th>
               <th class="px-4 py-3 font-semibold">Motor</th>
+              <th class="px-4 py-3 font-semibold">Color</th>
               <th class="px-4 py-3" />
             </tr>
           </thead>
@@ -226,15 +241,15 @@ onMounted(() => store.fetchItems(1))
 
             <!-- Estado vacío -->
             <tr v-if="!store.loading && store.items.length === 0">
-              <td colspan="5" class="py-16 text-center text-sm text-gray-400">
+              <td colspan="6" class="py-16 text-center text-sm text-gray-400">
                 No se encontraron modelos en el catálogo.
               </td>
             </tr>
 
             <!-- Skeleton primera carga -->
             <tr v-else-if="store.loading && store.items.length === 0" v-for="n in 8" :key="n">
-              <td v-for="c in 5" :key="c" class="px-4 py-3">
-                <div class="h-4 bg-gray-200 rounded animate-pulse" :style="{ width: c === 5 ? '72px' : '100%' }" />
+              <td v-for="c in 6" :key="c" class="px-4 py-3">
+                <div class="h-4 bg-gray-200 rounded animate-pulse" :style="{ width: c === 6 ? '72px' : '100%' }" />
               </td>
             </tr>
 
@@ -250,6 +265,10 @@ onMounted(() => store.fetchItems(1))
               <td class="px-4 py-3 text-gray-700 tabular-nums">{{ item.year }}</td>
               <td class="px-4 py-3 text-gray-500">
                 <span v-if="item.motor_cc">{{ item.motor_cc }} cc</span>
+                <span v-else class="text-gray-300">—</span>
+              </td>
+              <td class="px-4 py-3 text-gray-700">
+                <span v-if="item.color">{{ item.color }}</span>
                 <span v-else class="text-gray-300">—</span>
               </td>
               <td class="px-4 py-3">
@@ -392,6 +411,12 @@ onMounted(() => store.fetchItems(1))
               <input v-model="form.motor_cc" type="number" required min="1" max="65535" placeholder="150"
                 class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
             </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Color <span class="normal-case font-normal text-gray-400">(opcional)</span></label>
+            <input v-model="form.color" type="text" placeholder="Rojo, Negro, Azul..."
+              class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
 
           <div class="flex justify-end gap-3 pt-1">

@@ -6,6 +6,7 @@ import { VueDatePicker } from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { es } from 'date-fns/locale'
 import ServiceOrderModal from '@/components/dashboard/ServiceOrderModal.vue'
+import VehicleDisplay from '@/components/ui/VehicleDisplay.vue'
 
 const store = useServicesStore()
 const selectedOrder = ref(null)
@@ -279,12 +280,8 @@ onMounted(() => {
                 <div class="text-xs text-gray-400 font-normal">{{ order.vehicle?.customer?.phone_number }}</div>
               </td>
 
-              <td class="px-4 py-3 text-gray-700">
-                {{ order.vehicle?.vehicle_catalog?.brand }}
-                {{ order.vehicle?.vehicle_catalog?.model }}
-                {{ order.vehicle?.vehicle_catalog?.year }}
-                <span v-if="order.vehicle?.vehicle_catalog?.motor_cc" class="text-gray-400 text-xs ml-0.5">{{ order.vehicle.vehicle_catalog.motor_cc }}cc</span>
-                <span class="text-gray-400 text-xs ml-1">· {{ order.vehicle?.color }}</span>
+              <td class="px-4 py-3">
+                <VehicleDisplay v-if="order.vehicle" :vehicle="order.vehicle" />
               </td>
 
               <td class="px-4 py-3 text-gray-600 font-mono text-xs whitespace-nowrap">
