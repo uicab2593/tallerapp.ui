@@ -3,6 +3,7 @@
 export const MOTORCYCLE_BRANDS = [
   'Aprilia',
   'Bajaj',
+  'BDS',
   'Benelli',
   'Beta',
   'BMW',
