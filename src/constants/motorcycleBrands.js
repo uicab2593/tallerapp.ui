@@ -21,6 +21,7 @@ export const MOTORCYCLE_BRANDS = [
   'Lifan',
   'Maverick',
   'MB',
+  'MORBIDELLI',
   'Royal Enfield',
   'Suzuki',
   'Triumph',
