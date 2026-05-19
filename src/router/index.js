@@ -55,7 +55,7 @@ const router = createRouter({
           path: 'catalogo',
           name: 'vehicle-catalog',
           component: () => import('../views/VehicleCatalogView.vue'),
-          meta: { requiresRoles: ['master'] },
+          meta: { requiresRoles: ['master', 'admin'] },
         },
         // Los módulos se agregan aquí como rutas hijas
       ],

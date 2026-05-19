@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useServiceOrdersStore, STATUS_META, STATUS_TRANSITIONS } from '@/stores/serviceOrders'
+import { useServiceOrdersStore, STATUS_META, STATUS_TRANSITIONS, MASTER_DELIVERED_TRANSITIONS } from '@/stores/serviceOrders'
+import { useAuthStore } from '@/stores/auth'
 import { serviceOrdersApi } from '@/api/serviceOrders'
 import { vehiclesApi } from '@/api/vehicles'
 import ServiceOrderNotes from '@/components/dashboard/ServiceOrderNotes.vue'
@@ -15,6 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 
 const store = useServiceOrdersStore()
+const auth  = useAuthStore()
 const toast = ref(null)
 
 // ── Local status (tracks changes independently from the form) ────────────────
@@ -49,7 +51,12 @@ const pendingStatus       = ref(null)
 const statusChanging      = ref(false)
 const statusChangeError   = ref(null)
 
-const nextStatuses = computed(() => STATUS_TRANSITIONS[localStatus.value] ?? [])
+const nextStatuses = computed(() => {
+  if (localStatus.value === 'delivered' && auth.user?.rol === 'master') {
+    return MASTER_DELIVERED_TRANSITIONS
+  }
+  return STATUS_TRANSITIONS[localStatus.value] ?? []
+})
 
 const deliveredValidationErrors = computed(() => {
   if (pendingStatus.value !== 'delivered') return []

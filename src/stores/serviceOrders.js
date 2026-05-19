@@ -27,6 +27,8 @@ export const STATUS_TRANSITIONS = {
   cancelled:        [],
 }
 
+export const MASTER_DELIVERED_TRANSITIONS = ['service_finished', 'in_service', 'approved', 'diagnosed', 'received']
+
 export const useServiceOrdersStore = defineStore('serviceOrders', () => {
   // ── Kanban (Tab 1) ───────────────────────────────────────────────────────────
   const orders    = ref([])
