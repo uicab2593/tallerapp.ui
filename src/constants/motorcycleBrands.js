@@ -9,6 +9,7 @@ export const MOTORCYCLE_BRANDS = [
   'BMW',
   'Carabela',
   'CFMoto',
+  'Dinamo',
   'Ducati',
   'Harley-Davidson',
   'Hero',
