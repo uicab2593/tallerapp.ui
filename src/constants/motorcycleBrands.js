@@ -17,6 +17,7 @@ export const MOTORCYCLE_BRANDS = [
   'Husqvarna',
   'Italika',
   'Kawasaki',
+  'KIWO',
   'KTM',
   'KYMCO',
   'Lifan',
