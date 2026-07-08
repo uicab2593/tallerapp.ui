@@ -24,6 +24,7 @@ export const MOTORCYCLE_BRANDS = [
   'Maverick',
   'MB',
   'MORBIDELLI',
+  'Motorstreck',
   'Royal Enfield',
   'Suzuki',
   'Tribu',
